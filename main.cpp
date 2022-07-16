@@ -6,14 +6,24 @@
 //
 
 #include <iostream>
+#include <vector>
 #include "Color.h"
 #include "Ray.h"
 #include "Vector3.h"
+#include "Shape.h"
+#include "Sphere.h"
 
 Color ray_color(const Ray& r) {
     Vector3 unit_direction = unit_vector(r.get_direction());
     auto t= 0.5 * (unit_direction.y() + 1.0);
     return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);
+}
+
+Shape* return_first_intersected_shape(std::vector<Shape*>* shapes, Ray r) {
+    for (auto & shape : *shapes) {
+        if (shape->b_ray_hit(r)) return shape;
+    }
+    return nullptr;
 }
 
 int main() {
@@ -49,6 +59,17 @@ int main() {
 
 #pragma endregion CameraParameters
 
+#pragma region SceneGeometry
+
+    std::vector<Shape*> Shapes;
+    // Scene shapes
+    Sphere sphere_1 = Sphere(Point3(0, 0, -10), 5);
+    Shapes.push_back(&sphere_1);
+
+
+#pragma endregion SceneGeometry
+
+
 #pragma region Renderer
 
     std::cout << "P3\n" << image_width << ' ' << image_height << ' ' << "\n255\n";
@@ -60,7 +81,11 @@ int main() {
             double y_progress= y / (image_height - 1.0);
 
             Ray r(origin, scan_start_corner + x_progress * width_vector + y_progress * height_vector - origin);
-            Color pixel= ray_color(r);
+
+            auto intersected_shape= return_first_intersected_shape(&Shapes, r);
+            Color pixel;
+            if (intersected_shape == nullptr) pixel= ray_color(r);
+            else pixel= intersected_shape->color_from_ray(r);
             write_color(std::cout, pixel);
         }
     }
