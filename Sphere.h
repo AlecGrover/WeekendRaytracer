@@ -16,8 +16,10 @@ public:
 public:
     Sphere(Point3 location, double radius);
 
-    bool b_ray_hit(Ray r) override;
+    bool b_ray_hit(const Ray& r, double t_min, double t_max, hit& hit_out) const override;
     Color color_from_ray(Ray r) override;
+
+    Color color_from_hit(const hit &h) override;
 };
 
 

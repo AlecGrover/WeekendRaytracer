@@ -18,4 +18,24 @@ inline double get_closest_t(double a, double b, double c) {
     return std::fmin(sub, add);
 }
 
+inline bool get_valid_t_simplified(const double a, const double half_b, const double c, const double t_min,
+                                   const double t_max, double& t_out) {
+    auto discriminant= half_b * half_b - a * c;
+    if (discriminant < 0) return false;
+    auto root= std::sqrt(discriminant);
+    double sub= (-half_b - root) / a;
+    if (sub >= t_min && sub <= t_max) {
+        t_out= sub;
+        return true;
+    }
+
+    double add=  (-half_b + root) / a;
+    if (add >= t_min && add <= t_max) {
+        t_out= add;
+        return true;
+    }
+
+    return false;
+}
+
 #endif //RAYTRACER_QUADRATICHELPER_H

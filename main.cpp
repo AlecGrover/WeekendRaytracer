@@ -19,11 +19,31 @@ Color ray_color(const Ray& r) {
     return (1.0 - t) * Color(1.0, 1.0, 1.0) + t * Color(0.5, 0.7, 1.0);
 }
 
-Shape* return_first_intersected_shape(std::vector<Shape*>* shapes, Ray r) {
-    for (auto & shape : *shapes) {
-        if (shape->b_ray_hit(r)) return shape;
+//Shape* return_first_intersected_shape(std::vector<Shape*>* shapes, Ray r) {
+//    for (auto & shape : *shapes) {
+//        if (shape->b_ray_hit(r)) return shape;
+//    }
+//    return nullptr;
+//}
+
+bool get_first_intersected_color(const std::vector<Shape*>& shapes, Ray& r, Color& out, double t_min, double t_max) {
+    hit hit_out;
+    double closest_hit_distance = std::numeric_limits<double>::max();
+    Shape* hit_shape= nullptr;
+    hit closest_hit;
+    for (auto shape : shapes) {
+        if (shape->b_ray_hit(r, t_min, t_max, hit_out)) {
+            if (hit_out.hit_location.length_squared() < closest_hit_distance) {
+                closest_hit= hit_out;
+                hit_shape= shape;
+            }
+        }
     }
-    return nullptr;
+
+    if (hit_shape == nullptr) return false;
+
+    out= hit_shape->color_from_hit(closest_hit);
+    return true;
 }
 
 int main() {
@@ -72,7 +92,11 @@ int main() {
 
 #pragma region Renderer
 
+    const double T_MIN= 1;
+    const double T_MAX= 100;
+
     std::cout << "P3\n" << image_width << ' ' << image_height << ' ' << "\n255\n";
+    hit out;
 
     for (int y= image_height - 1; y >= 0; y--) {
         std::cerr << "\rScanlines Remaining: " << y << ' ' << std::flush;
@@ -81,11 +105,9 @@ int main() {
             double y_progress= y / (image_height - 1.0);
 
             Ray r(origin, scan_start_corner + x_progress * width_vector + y_progress * height_vector - origin);
-
-            auto intersected_shape= return_first_intersected_shape(&Shapes, r);
             Color pixel;
-            if (intersected_shape == nullptr) pixel= ray_color(r);
-            else pixel= intersected_shape->color_from_ray(r);
+
+            if (!get_first_intersected_color(Shapes, r, pixel, T_MIN, T_MAX)) pixel= ray_color(r);
             write_color(std::cout, pixel);
         }
     }
