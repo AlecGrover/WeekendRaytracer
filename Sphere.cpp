@@ -17,6 +17,7 @@ bool Sphere::b_ray_hit(const Ray& r, double t_min, double t_max, hit& hit_out) c
     if (!get_valid_t_simplified(a, half_b, c, t_min, t_max, hit_out.t)) return false;
     hit_out.hit_location= r.at(hit_out.t);
     hit_out.normal= get_normal_at_point(hit_out.hit_location);
+    hit_out.material= material;
     auto outward_n= (hit_out.hit_location - location) / radius;
     hit_out.determine_face(r, outward_n);
 
@@ -45,4 +46,4 @@ Color Sphere::color_from_hit(const hit& h) {
     return 0.5 * Color(h.normal.x() + 1, h.normal.y() + 1, h.normal.z() + 1);
 }
 
-Sphere::Sphere(Point3 location, double radius) : Shape(location), radius(radius) { }
+Sphere::Sphere(Point3 location, double radius, std::shared_ptr<Material> material) : Shape(location, material), radius(radius) { }

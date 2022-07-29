@@ -4,7 +4,7 @@
 
 #include "Shape.h"
 
-Shape::Shape(Point3 location) : location(location) { }
+Shape::Shape(Point3 location, std::shared_ptr<Material> material) : location(location), material(material) { }
 
 Color Shape::color_from_ray(Ray r) {
     return {1.0, 0.41, 0.12};

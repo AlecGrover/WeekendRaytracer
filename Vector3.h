@@ -41,6 +41,10 @@ public:
 
     double length_squared() const;
 
+    bool b_near_zero() const;
+
+    static Vector3 reflect(const Vector3& v, const Vector3& normal);
+
 public:
     double e[3];
 };

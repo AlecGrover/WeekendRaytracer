@@ -14,7 +14,7 @@ public:
     double radius;
 
 public:
-    Sphere(Point3 location, double radius);
+    Sphere(Point3 location, double radius, std::shared_ptr<Material> material);
 
     bool b_ray_hit(const Ray& r, double t_min, double t_max, hit& hit_out) const override;
     Color color_from_ray(Ray r) override;

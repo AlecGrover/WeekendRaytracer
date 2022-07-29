@@ -83,6 +83,17 @@ double Vector3::length_squared() const {
     return this->Dot(*this);
 }
 
+bool Vector3::b_near_zero() const {
+    const auto effective_epsilon = 1e-8;
+    return(fabs(e[0]) < effective_epsilon
+        && fabs(e[1]) < effective_epsilon
+        && fabs(e[2]) < effective_epsilon);
+}
+
+Vector3 Vector3::reflect(const Vector3 &v, const Vector3 &normal) {
+    return v - 2.0 * dot(v, normal) * normal;
+}
+
 
 
 
