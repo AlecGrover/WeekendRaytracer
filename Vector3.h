@@ -47,6 +47,8 @@ public:
 
 public:
     double e[3];
+
+    static Vector3 refract(const Vector3 &v, const Vector3 &normal, double eta_over_eta_prime);
 };
 
 using Point3= Vector3;

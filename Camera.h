@@ -16,16 +16,18 @@ public:
     double viewport_height;
     double viewport_width;
     double focal_length;
+    double vfov;
 public:
     explicit Camera(double aspect_ratio= 1.6, double vh= 500, double focal_length= 1.0, Point3 origin= ZERO_VECTOR);
     Ray get_ray(double x, double y) const;
-    void write_color(std::ostream &os, Color pixel_color, int samples);
+    static void write_color(std::ostream &os, Color pixel_color, int samples);
     void write_color_gamma_corrected(std::ostream &os, Color pixel_color, int samples);
 private:
     Point3 origin;
     Point3 scan_start;
     Vector3 horizontal_vector;
     Vector3 vertical_vector;
+
 
 
 };

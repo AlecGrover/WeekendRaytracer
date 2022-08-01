@@ -94,6 +94,13 @@ Vector3 Vector3::reflect(const Vector3 &v, const Vector3 &normal) {
     return v - 2.0 * dot(v, normal) * normal;
 }
 
+Vector3 Vector3::refract(const Vector3& v, const Vector3& normal, double eta_over_eta_prime) {
+    auto cos_t= fmin(dot(-v, normal), 1.0);
+    Vector3 perpendicular= eta_over_eta_prime * (v + cos_t * normal);
+    Vector3 parallel= -sqrt(fabs(1.0 - perpendicular.length_squared())) * normal;
+    return perpendicular + parallel;
+}
+
 
 
 

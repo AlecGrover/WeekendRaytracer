@@ -5,9 +5,13 @@
 #include "Camera.h"
 #include <math.h>
 
-Camera::Camera(double aspect_ratio, double vh, double focal_length, Point3 origin)
- : aspect_ratio(aspect_ratio), viewport_height(vh), focal_length(focal_length), origin(origin){
-    viewport_width= aspect_ratio * vh;
+Camera::Camera(double aspect_ratio, double vfov, double focal_length, Point3 origin)
+ : aspect_ratio(aspect_ratio), vfov(vfov), focal_length(focal_length), origin(origin){
+    auto t= deg2rad(vfov);
+    auto h= tan(t/2.0);
+    viewport_height= 2.0 * h;
+    viewport_width= aspect_ratio * viewport_height;
+
     horizontal_vector= Vector3(viewport_width, 0.0, 0.0);
     vertical_vector= Vector3(0.0, viewport_height, 0.0);
     scan_start= origin - Vector3(viewport_width / 2.0, viewport_height / 2.0, focal_length);

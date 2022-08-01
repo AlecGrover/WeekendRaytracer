@@ -9,13 +9,12 @@
 #include <vector>
 #include "Color.h"
 #include "Ray.h"
-#include "Vector3.h"
 #include "Shape.h"
 #include "Sphere.h"
-#include "util.h"
 #include "Camera.h"
 #include "Lambertian.h"
 #include "Metal.h"
+#include "Dielectric.h"
 
 Ray get_unit_sphere_rejection_ray(const hit &parameters);
 
@@ -63,7 +62,6 @@ bool get_first_intersected_color(const std::vector<Shape*>& shapes, Ray& r, Colo
 bool get_first_hit(const std::vector<Shape*>& shapes, const Ray& r, hit& out, double t_min= 0.001, double t_max= INFINITY_DOUBLE) {
     hit hit_out;
     double closest_hit_distance = MAX_DOUBLE;
-    Shape* hit_shape= nullptr;
     hit closest_hit;
     bool hit_something= false;
     for (auto shape : shapes) {
@@ -72,7 +70,6 @@ bool get_first_hit(const std::vector<Shape*>& shapes, const Ray& r, hit& out, do
                 hit_something= true;
                 closest_hit= hit_out;
                 closest_hit_distance= (hit_out.hit_location - r.get_origin()).length_squared();
-                hit_shape= shape;
             }
         }
     }
@@ -164,9 +161,9 @@ int main() {
 
 #pragma region CameraParameters
 
-    auto viewport_height= 2.0;
-    auto focal_length= 1.0;
-    Camera camera(aspect_ratio, viewport_height, focal_length);
+    auto focal_length= 2.0;
+    auto fov= 100.0;
+    Camera camera(aspect_ratio, fov / aspect_ratio, focal_length);
     // Scan starts in bottom left
 
 #pragma endregion CameraParameters
@@ -178,13 +175,16 @@ int main() {
     auto m_center= std::make_shared<Lambertian>(0.75 * SALMON);
     auto m_right= std::make_shared<Metal>(0.8 * WHITE, 0.05);
     auto m_left= std::make_shared<Metal>(BEIGE * 0.8, 0.6);
+    auto m_front= std::make_shared<Dielectric>(WHITE, 1.5);
 
     std::vector<Shape*> Shapes;
     // Scene shapes
-    Sphere sphere_center= Sphere(Point3(0, 0, -12), 5, m_center);
-    Sphere sphere_right= Sphere(Point3(-10, -1, -10), 4, m_right);
-    Sphere sphere_left= Sphere(Point3(15, 3, -20), 8, m_left);
-    Sphere ground_sphere= Sphere(Point3(0, -205, -10), 200, m_ground);
+    Sphere sphere_center= Sphere(Point3(0, 0, -22), 5, m_center);
+    Sphere sphere_right= Sphere(Point3(-10, -1, -20), 4, m_right);
+    Sphere sphere_left= Sphere(Point3(15, 3, -30), 8, m_front);
+    Sphere ground_sphere= Sphere(Point3(0, -205, -20), 200, m_ground);
+    Sphere sphere_front= Sphere(Point3(0, -3.5, -15), 1.5, m_front);
+    Shapes.push_back(&sphere_front);
     Shapes.push_back(&sphere_center);
     Shapes.push_back(&sphere_left);
     Shapes.push_back(&sphere_right);
@@ -205,7 +205,7 @@ int main() {
 
     for (int y= image_height - 1; y >= 0; y--) {
         std::cerr << "\rScanlines Remaining: " << y << ' ' << std::flush;
-        for (int x= image_width - 1; x >= 0; x--) {
+        for (int x= 0; x < image_width; x++) {
             Color pixel= {};
             for (int s= 0; s < samples; s++) {
                 Color sample= {};

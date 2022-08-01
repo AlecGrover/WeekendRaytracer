@@ -8,7 +8,7 @@
 #include "Vector3.h"
 #include <iostream>
 
-void write_color(std::ostream &os, Color pixel_color) {
+inline void write_color(std::ostream &os, Color pixel_color) {
     os << static_cast<int>(255.99 * pixel_color.x()) << ' '
        << static_cast<int>(255.99 * pixel_color.y()) << ' '
        << static_cast<int>(255.99 * pixel_color.z()) << '\n';
