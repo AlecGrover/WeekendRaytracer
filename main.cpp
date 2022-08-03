@@ -15,6 +15,7 @@
 #include "Lambertian.h"
 #include "Metal.h"
 #include "Dielectric.h"
+#include "Plane.h"
 
 Ray get_unit_sphere_rejection_ray(const hit &parameters);
 
@@ -146,6 +147,7 @@ int main() {
      *  Begin Project Code
      */
 
+
 #pragma region ImageParameters
 
     // Image Constants
@@ -155,15 +157,17 @@ int main() {
 
     const int image_height= 500;
     const int image_width= static_cast<int>(image_height * aspect_ratio);
-    const int samples= 12;
+    const int samples= 200;
 
 #pragma endregion ImageParameters
 
 #pragma region CameraParameters
 
     auto focal_length= 2.0;
-    auto fov= 100.0;
-    Camera camera(aspect_ratio, fov / aspect_ratio, focal_length);
+    auto fov= 90.0;
+    Point3 origin= {0, 20, 20 };
+    Vector3 rotation= {-20, -5, 0};
+    Camera camera(aspect_ratio, fov / aspect_ratio, focal_length, origin, rotation);
     // Scan starts in bottom left
 
 #pragma endregion CameraParameters
@@ -171,7 +175,7 @@ int main() {
 #pragma region SceneGeometry
 
 
-    auto m_ground= std::make_shared<Lambertian>(BROWN);
+    auto m_ground= std::make_shared<Lambertian>(GREEN * 0.5);
     auto m_center= std::make_shared<Lambertian>(0.75 * SALMON);
     auto m_right= std::make_shared<Metal>(0.8 * WHITE, 0.05);
     auto m_left= std::make_shared<Metal>(BEIGE * 0.8, 0.6);
@@ -179,11 +183,11 @@ int main() {
 
     std::vector<Shape*> Shapes;
     // Scene shapes
-    Sphere sphere_center= Sphere(Point3(0, 0, -22), 5, m_center);
-    Sphere sphere_right= Sphere(Point3(-10, -1, -20), 4, m_right);
-    Sphere sphere_left= Sphere(Point3(15, 3, -30), 8, m_front);
-    Sphere ground_sphere= Sphere(Point3(0, -205, -20), 200, m_ground);
-    Sphere sphere_front= Sphere(Point3(0, -3.5, -15), 1.5, m_front);
+    Sphere sphere_center= Sphere(Point3(0, 5, -22), 5, m_center);
+    Sphere sphere_right= Sphere(Point3(-10, 4, -20), 4, m_right);
+    Sphere sphere_left= Sphere(Point3(15, 8, -30), 8, m_front);
+    Sphere ground_sphere= Sphere(Point3(0, -2500, 0), 2500, m_ground);
+    Sphere sphere_front= Sphere(Point3(0, 1.5, -15), 1.5, m_front);
     Shapes.push_back(&sphere_front);
     Shapes.push_back(&sphere_center);
     Shapes.push_back(&sphere_left);
@@ -197,7 +201,7 @@ int main() {
 #pragma region Renderer
 
     const double T_MIN= 1;
-    const double T_MAX= 100;
+    const double T_MAX= 50;
     const int MAX_DEPTH= 50;
 
     std::cout << "P3\n" << image_width << ' ' << image_height << ' ' << "\n255\n";

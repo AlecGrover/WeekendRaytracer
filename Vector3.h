@@ -45,6 +45,11 @@ public:
 
     static Vector3 reflect(const Vector3& v, const Vector3& normal);
 
+    void normalize();
+
+    Vector3 rotate_around_axis(Vector3 axis, const double degrees);
+
+
 public:
     double e[3];
 

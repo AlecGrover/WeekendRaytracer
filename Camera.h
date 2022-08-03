@@ -9,6 +9,7 @@
 #include "Vector3.h"
 #include "util.h"
 #include "Ray.h"
+#include "Rotation.h"
 
 class Camera {
 public:
@@ -17,8 +18,9 @@ public:
     double viewport_width;
     double focal_length;
     double vfov;
+    Rotation rotation;
 public:
-    explicit Camera(double aspect_ratio= 1.6, double vh= 500, double focal_length= 1.0, Point3 origin= ZERO_VECTOR);
+    explicit Camera(double aspect_ratio= 1.6, double vh= 500, double focal_length= 1.0, Point3 origin= ZERO_VECTOR, Vector3 camera_rotation= ZERO_VECTOR);
     Ray get_ray(double x, double y) const;
     static void write_color(std::ostream &os, Color pixel_color, int samples);
     void write_color_gamma_corrected(std::ostream &os, Color pixel_color, int samples);

@@ -5,16 +5,19 @@
 #include "Camera.h"
 #include <math.h>
 
-Camera::Camera(double aspect_ratio, double vfov, double focal_length, Point3 origin)
+Camera::Camera(double aspect_ratio, double vfov, double focal_length, Point3 origin, Vector3 camera_rotation)
  : aspect_ratio(aspect_ratio), vfov(vfov), focal_length(focal_length), origin(origin){
     auto t= deg2rad(vfov);
     auto h= tan(t/2.0);
     viewport_height= 2.0 * h;
     viewport_width= aspect_ratio * viewport_height;
 
-    horizontal_vector= Vector3(viewport_width, 0.0, 0.0);
-    vertical_vector= Vector3(0.0, viewport_height, 0.0);
-    scan_start= origin - Vector3(viewport_width / 2.0, viewport_height / 2.0, focal_length);
+    rotation= Rotation();
+    rotation.rotate(camera_rotation);
+
+    horizontal_vector= viewport_width * rotation.right;
+    vertical_vector= viewport_height * rotation.up;
+    scan_start= origin - horizontal_vector/2 - vertical_vector/2 - rotation.forward * focal_length;
 }
 
 Ray Camera::get_ray(double x, double y) const {

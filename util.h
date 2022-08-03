@@ -13,8 +13,9 @@
 
 // Constants
 const double MAX_DOUBLE= std::numeric_limits<double>::max();
+const double DOUBLE_EPSILON= std::numeric_limits<double>::epsilon();
 const double INFINITY_DOUBLE= std::numeric_limits<double>::infinity();
-const double PI_DOUBLE= 3.1415926535897932385;
+const double PI_DOUBLE= 3.14159265358979323846;
 const Vector3 ZERO_VECTOR= Vector3(0, 0, 0);
 
 enum diffuse_renderer {

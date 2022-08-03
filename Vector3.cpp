@@ -4,6 +4,7 @@
 //
 
 #include "Vector3.h"
+#include "Quaternion.h"
 #include <cmath>
 
 #pragma region Vector3
@@ -99,6 +100,32 @@ Vector3 Vector3::refract(const Vector3& v, const Vector3& normal, double eta_ove
     Vector3 perpendicular= eta_over_eta_prime * (v + cos_t * normal);
     Vector3 parallel= -sqrt(fabs(1.0 - perpendicular.length_squared())) * normal;
     return perpendicular + parallel;
+}
+
+void Vector3::normalize() {
+    auto magnitude= length();
+    e[0] /= magnitude;
+    e[1] /= magnitude;
+    e[2] /= magnitude;
+}
+
+// The quaternion rotation algorithm is based on the work of Harold Serrano at:
+// https://www.haroldserrano.com/blog/developing-a-math-engine-in-c-implementing-quaternions
+Vector3 Vector3::rotate_around_axis(Vector3 axis, double degrees) {
+    Quaternion p((*this), 0);
+
+    axis.normalize();
+
+    Quaternion q(axis, degrees);
+    q.unit_normalize();
+
+    Quaternion q_inverse= q.inverse();
+
+    Quaternion rotated= q * p * q_inverse;
+
+
+
+    return rotated.get_vector();
 }
 
 
